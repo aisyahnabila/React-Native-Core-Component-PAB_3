@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
     FlatList,
-    Image,
     Text,
     Modal,
     TouchableOpacity,
@@ -10,6 +9,7 @@ import {
     Button,
     Alert,
 } from "react-native";
+import { NativeBaseProvider, Box, Image } from 'native-base';
 
 // Dummmy Data (Array of Object)
 const datas = [
@@ -88,36 +88,52 @@ const List = () => {
 
     const renderItem = ({ item }) => {
         return (
-            <TouchableOpacity style={styles.view} onPress={() => {
-                setSelectedItem(item); // Menyimpan artikel yang dipilih
-                setModalVisible(true);
-            }}>
-                <View>
-                    <Image source={{ uri: item.image }} style={styles.image} />
-                    <Text style={styles.text}>{item.title}</Text>
-                </View>
-            </TouchableOpacity>
+            <NativeBaseProvider>
+                <TouchableOpacity style={styles.Box} onPress={() => {
+                    setSelectedItem(item); // Menyimpan artikel yang dipilih
+                    setModalVisible(true);
+                }}>
+                    <Box>
+                        <Image source={{ uri: item.image }} style={styles.image} />
+                        <Text style={styles.text}>{item.title}</Text>
+                    </Box>
+                </TouchableOpacity>
+            </NativeBaseProvider>
         );
     };
 
     const renderModal = (selectedItem) => {
         return (
-            <Modal
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(false);
-                }}
-                transparent={true}
-            >
-                <View style={styles.modal}>
-                    <View style={styles.modalContent}>
+            <NativeBaseProvider>
+                <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} transparent={true}>
+                    <Box maxW="400px" style={styles.modal}>
+                        <Image source={{ uri: selectedItem.image }} style={styles.image} />
                         <Text style={styles.modalText}>{selectedItem.title}</Text>
                         <Button title="Lanjut Membaca" style={styles.showAlertButton} onPress={showAlert} />
-                        <Button title="Tutup" color="#E9B824" style={styles.closeButton} onPress={() => setModalVisible(false)} />
-                    </View>
-                </View>
-            </Modal>
+                        <Button title="Tutup" color="#E9B824" onPress={() => setModalVisible(false)} />
+                    </Box>
+                </Modal>
+            </NativeBaseProvider>
         );
+
+        // return (
+        //     <Modal
+        //         visible={modalVisible}
+        //         onRequestClose={() => {
+        //             setModalVisible(false);
+        //         }}
+        //         transparent={true}
+        //     >
+        //         <View style={styles.modal}>
+        //             <View style={styles.modalContent}>
+        //                 <Image source={{ uri: selectedItem.image }} style={styles.image} />
+        //                 <Text style={styles.modalText}>{selectedItem.title}</Text>
+        //                 <Button title="Lanjut Membaca" style={styles.showAlertButton} onPress={showAlert} />
+        //                 <Button title="Tutup" color="#E9B824" style={styles.closeButton} onPress={() => setModalVisible(false)} />
+        //             </View>
+        //         </View>
+        //     </Modal>
+        // );
     };
 
     const showAlert = () => {
@@ -148,22 +164,24 @@ const List = () => {
 
 
     return (
-        <View>
-            <FlatList
-                data={datas}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-            />
+        <NativeBaseProvider>
+            <Box>
+                <FlatList
+                    data={datas}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                />
 
-            {selectedItem && renderModal(selectedItem)}
-            {/* {renderModal()} */}
-        </View>
+                {selectedItem && renderModal(selectedItem)}
+                {/* {renderModal()} */}
+            </Box>
+        </NativeBaseProvider>
     );
 };
 
 // Styles
 const styles = StyleSheet.create({
-    view: {
+    Box: {
         padding: 15,
         borderBottomColor: "#dddddd",
         borderBottomWidth: 1,
